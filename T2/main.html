@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Trabalho de Organização e Arquitetura de Computadores</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+			  integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+			  crossorigin="anonymous">
+		<link rel="stylesheet" href="styles/header_style.css">
+		<link rel="stylesheet" href="styles/main.css">
+		<link rel="stylesheet" href="styles/footer_style.css">
+	</head>
+	<body class="page" id="page">
+	<nav class="navigation">
+		<h1></h1>
+		</nav>
+
+		<div class="content">
+			<h1>Arquitetura MIPS Monociclo</h1>
+			<p>
+				Para entendermos o Monociclo, é necessário entender os 3 formatos de instrução: Tipos R, I e J.
+			</p>
+			<h3>TIPO R:</h3>
+			<p>
+				O tipo R envolve operações registrador-registrador, como por exemplo ADD e SUB. Nesse tipo, os bits são organizados da seguinte
+				forma:
+			</p>
+			<img src="imagens/TipoR.jpg">
+			<p>
+				Onde: OP é o opcode, RS e RT são os registradores de origem, RD é o registrador de destino, SHAMT a quantidade de bits a serem deslocados e
+				 FUNCT a função a ser executada.
+			</p>
+			<h3>TIPO I:</h3>
+			<p>
+				O tipo I envolve operações com valor imediato, como por exemplo ADDI e BEQ. Nesse tipo, os bits são organizados da seguinte
+				forma:
+			</p>
+			<img src="imagens/TipoI.jpg">
+			<p>
+				Onde: OP é o opcode, RS é o registrador a ser operado, RT é o registrador de destino e a constante pode ir de -2 elevado a 15 até 2 elevado a 15 -1.
+			</p>
+			<h3>TIPO J:</h3>
+			<p>
+				O tipo J envolve operações de desvio, como por exemplo Jump. Nesse tipo, os bits são organizados da seguinte
+				forma:
+			</p>
+			<img src="imagens/TipoI.jpg">
+			<p>
+				Onde: OP é o opcode e ENDEREÇO é o endereço destino.
+			</p>
+			<p>
+				Todas as instruções tem tamanho de 32 bits, com o OP code sempre nos 6 bits mais significativos.
+			</p>
+			<h2>Componentes:</h2>
+			<ul>
+				<li>Banco de Registradores</li>
+				<li>Unidade de Controle</li>
+				<li>ULA</li>
+				<li>Memória</li>
+				<li>Entrada/Saída</li>
+				<li>Multiplexadores</li>
+				<li>Linhas de dados</li>
+				<li>Linhas de controle</li>
+			</ul>
+			<h2>Conjunto de instruções básicas:</h2>
+			<ul>
+				<li>Instruções de memória: lw e sw</li>
+				<li>Instruções aritméticas: add, sub</li>
+				<li>Instruções lógicas: or, slt</li>
+				<li>Instruções de desvio: beq</li>
+			</ul>
+			<h2>A unidade de controle</h2>
+			<p>Para uma explicação direta das instruções, antes temos que entender a unidade de controle. Ela possui 8 linhas, chamadas de linhas de controle.
+				Essas linhas são:
+				<ul>
+					<li>RegDst:</li>
+					<p>Seleciona qual registrador é o destino</p>
+					<li>Branch:</li>
+					<p>Permite a realização de um branch</p>
+					<li>MemRead:</li>
+					<p>Indica que deve ser feita a leitura da memória</p>
+					<li>MemWrite:</li>
+					<p>Indica que deve ser feita a escrita na memória</p>
+					<li>ALUOp:</li>
+					<p>Indica qual operação deve ser feita na ULA</p>
+					<li>MemToReg:</li>
+					<p>Indica que a informação que sai da memória deve ser escrita no registrador</p>
+					<li>ALUSrc:</li>
+					<p>Seleciona de onde vem o valor para operação na ULA</p>
+					<li>RegWrite:</li>
+					<p>Indica que deve ser feita a escrita no registrador</p>
+				</ul>
+				O sistema de controle esta representado na imagem abaixo, de vermelho.
+			</p>
+			<img src="imagens/uc.jpg">
+
+			<h2>Execução das instruções:</h2>
+			<ul>
+				<li><h3>Busca:</h3></li>
+				<p>
+					Na busca da instrução, a instruction memory recebe a posição PC da memória e PC tem um acrescimo de 4, para registrar a próxima instrução.
+				</p>
+				<li><h3>Instruções de tipo R:</h3></li>
+				<p>
+					As instruções de tipo R utilizam o banco de registradores e a ULA. Ela lê dois registradores, faz a operação na ULA e escreve o resultado em
+					um registrador. Esse conjunto é representado na imagem abaixo:
+				</p>
+				<img src="imagens/Exec1.jpg">
+				<p>
+					Além disso, a unidade de controle autoriza a escrita em registradores e o uso da ULA para realizar a função solicitada.
+				</p>
+				<li><h3>Instruções de tipo I:</h3></li>
+				<p>
+					O valor imediato possui 16 bits e a leitura do endereço é feita através de um deslocamento desse mesmo tamanho.
+				</p>
+				<img src="imagens/Exec2.jpg">
+				<p>
+					Além disso, a unidade de controle autoriza a escrita na memória para o Store Word e a leitura da mesma para o Load Word.
+				</p>
+				<li><h3>Desvio:</h3></li>
+				<p>
+					No caso do desvio, tendo o endereço destino para PC = PC + 4 + desvio, é feita a leitura de dois registradores, que são comparados
+					na ULA e, se forem iguais, o desvio é permitido.
+				</p>
+				<img src="imagens/Exec3.jpg">
+				<p>
+					Como vemos no desenho, a saída da ULA libera um sinal que permite que o endereço recebido por PC seja o que possui desvio.
+				</p>
+			</ul>
+			<p>
+				Por fim, é necessário entenderemos a ALU Control, unidade de controle da ULA. Sabemos que as operações LW/SW usam a adição da ULA, para calcular
+				o endereço, que a BEQ usa a subtração da ULA, para verificar a igualdade, e que as instruções de tipo R dependem de FUNCT. Com isso, cria-se a tabela
+				verdade abaixo.
+			</p>
+			<img src="imagens/tv.jpg">
+			<p>
+				E, finalmente, temos a visão geral da estrutura do Monociclo, com os diferentes casos de jump com diferentes tratamentos pela UC ou ULA, o tratamento da instrução de PC, o acesso de leitura e escrita
+				em registradores, controlados pela UC, a ULA e usa unidade de controle(ALU Control), que também é controlada pela UC e a memória, com seu acesso, para leitura
+				e escrita, assim como o destino de sua saída, controlados pela Unidade de Controle:
+			</p>
+			<img src="imagens/final.jpg">
+		</div>
+		<div class="footer">
+			<p>
+			LINKS PARA CONSULTA: <a href="http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html">CONSULTA DAS INSTRUÇÕES</a> || FEITO POR: CESAR GUIBO, FILIPE COSTA, GUILHERME MAKAROVSKY E LEONARDO FONSECA
+			</p>
+		</div>
+	</body>
+</html>
+	
